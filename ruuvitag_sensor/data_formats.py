@@ -101,7 +101,7 @@ class DataFormats:
             return (5, (candidate[6:] + rssi) if rssi else candidate[6:])
         
         if candidate.startswith("FF990406"):  # Check for Data Format 6
-            return (6, (candidate[6:] + rssi) if rssi else candidate[6:])  # Return the extracted payload as sensor data
+            return (6, candidate[6:])
 
         if candidate.startswith("16AAFE"):
             # TODO: Check from raw data correct data format

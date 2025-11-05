@@ -294,19 +294,29 @@ class Df6Decoder:
 
     def _get_temperature(self, data):
         raw = int.from_bytes(data[1:3], "big", signed=True)
-        return raw * 0.005
+        return round(raw * 0.005, 2)
 
     def _get_humidity(self, data):
         raw = int.from_bytes(data[3:5], "big")
-        return raw * 0.0025
+        if raw == 65535:
+            return None
+        
+        # DF6: humidity resolution is 0.0025% -> divide by 400
+        return round(raw / 400, 3)
 
     def _get_pressure(self, data):
         raw = int.from_bytes(data[5:7], "big")
-        return raw + 50000
+        if raw == 0xFFFF:
+            return None
+
+        # raw is stored as (pressure_pa - 50000)
+        pressure_pa = raw + 50000
+        # Return in hPa
+        return round(pressure_pa / 100, 2)
 
     def _get_pm2_5(self, data):
         raw = int.from_bytes(data[7:9], "big")
-        return raw * 0.1
+        return round(raw * 0.1, 2)
 
     def _get_co2(self, data):
         return int.from_bytes(data[9:11], "big")
